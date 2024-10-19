@@ -1,0 +1,9 @@
+1-La première étape est de créer votre package jason(npm init -y)
+2-créer le fichier principal de notre serveur(EX:server.js)
+3-installer nodemon(npm i nodemon),un drive qui permet au serveur de démarrer automatiquement dès qu'il y'a une modification
+4-installer express pour créer le serveur(npm i express) 
+5-créer un fichier config qui contient(.env (default.json)) et le fichier connectDB.js(connecter le serveur à la base de données)
+6-installer "mongoose",le driver qui connecte le serveur à la base de données.
+7-vous devez créer un compte sur le site de mongoDB
+8-créer un template de données auquel on va se referer pour remplir notre base de données(mongoose schema)
+9-Utiliser thunder client pour le CRUD car nous n'avons pas de frontend pour faire des tests
