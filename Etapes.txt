@@ -1,9 +1,137 @@
-1-La première étape est de créer votre package jason(npm init -y)
-2-créer le fichier principal de notre serveur(EX:server.js)
-3-installer nodemon(npm i nodemon),un drive qui permet au serveur de démarrer automatiquement dès qu'il y'a une modification
-4-installer express pour créer le serveur(npm i express) 
-5-créer un fichier config qui contient(.env (default.json)) et le fichier connectDB.js(connecter le serveur à la base de données)
-6-installer "mongoose",le driver qui connecte le serveur à la base de données.
-7-vous devez créer un compte sur le site de mongoDB
-8-créer un template de données auquel on va se referer pour remplir notre base de données(mongoose schema)
-9-Utiliser thunder client pour le CRUD car nous n'avons pas de frontend pour faire des tests
+ACTIONTYPES:
+
+export const GET_USERS = "GET_USERS";
+export const ADD_USER = "ADD_USER";
+export const DELETE_USER = "DELETE_USER";
+export const EDIT_USER = "EDIT_USER";
+-------------------------------------------------------------------------------------
+REDUCER:
+
+import { GET_USERS } from "./actionTypes";
+
+const initialState = {
+    loading: true,
+    users: null,
+};
+
+
+const reducer = (state = initialState, {type, payload}) => {
+  switch(type) {
+    case GET_USERS:
+      
+       return { ...state, users: payload, loading: false};
+    
+    default:
+        return state;
+  }
+};
+
+export default reducer;
+--------------------------------------------
+STORE:
+
+import {applyMiddleware, compose, createStore} from "redux";
+import {thunk} from "redux-thunk";
+import reducer from "./reducer";
+
+const devtools = 
+    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__();
+
+const store = createStore(reducer,compose(applyMiddleware(thunk),devtools));
+
+export default store;
+-----------------------------------------------
+ACTIONS:
+
+import axios from "axios";
+import { GET_USERS } from "./actionTypes";
+
+export const getUsers = () => async (dispatch) => {
+    try {
+        const res = await axios.get("/get");
+        dispatch({
+            type: GET_USERS,
+            payload: res.data,
+          });
+        } catch (error) {
+         alert("get error");
+       }
+      };
+----------------------------------------------
+USER CARD:
+
+import React from "react";
+import Card from 'react-bootstrap/Card';
+import ListGroup from 'react-bootstrap/ListGroup';
+const UserCard = ({ el }) => {
+   return <div>
+       <Card style={{ width: '18rem' }}>
+      <ListGroup variant="flush">
+        <ListGroup.Item>{el.fullName}</ListGroup.Item>
+        <ListGroup.Item>{el.email}</ListGroup.Item>
+        <ListGroup.Item>{el.phone}</ListGroup.Item>
+      </ListGroup>
+    </Card>
+      </div>;
+};
+
+export default UserCard;
+---------------------------------------------------
+USER LIST:
+
+import React from "react";
+import { useSelector } from "react-redux";
+import UserCard from "./UserCard";
+import Spinner from 'react-bootstrap/Spinner';
+
+
+const UserList = () => {
+    const {loading , users } = useSelector((state) => state);
+    return (
+    <div>
+      {loading ? (
+      <Spinner animation="grow" variant="primary" />
+      ) : (
+      users.map((el) => <UserCard el={el} key={el._id}/>)
+      )}
+    </div>
+    );
+  };
+
+  export default UserList;
+  ----------------------------------------------------------
+  APP.JS:
+
+
+
+  import 'bootstrap/dist/css/bootstrap.min.css';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { getUsers } from './redux/actions';
+import UserList from "./components/UserList"; 
+import "./App.css";
+
+function App() {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getUsers());
+  }, []);
+  
+  return (
+     <div className="App">
+     <UserList  /> 
+    </div>
+  );
+}
+
+export default App;
+
+
+
+
+
+
+
+
+
+
